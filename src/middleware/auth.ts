@@ -1,4 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
+
+// augment Express Request to include `user`
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+        name?: string;
+        role?: string;
+      };
+    }
+  }
+}
 import  supabaseClient  from '../config/supabase';
 
 export async function authenticate(req: Request, res: Response, next: NextFunction) {
