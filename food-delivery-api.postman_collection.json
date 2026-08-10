@@ -1,0 +1,428 @@
+{
+  "info": {
+    "name": "Food Delivery API",
+    "description": "Test collection matching the resources, endpoints, and authorization rules designed for the food delivery backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4000" },
+    { "key": "customer_token", "value": "" },
+    { "key": "owner_token", "value": "" },
+    { "key": "owner2_token", "value": "" },
+    { "key": "driver_token", "value": "" },
+    { "key": "restaurant_id", "value": "" },
+    { "key": "menu_item_id", "value": "" },
+    { "key": "order_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register - Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@example.com\",\n  \"password\": \"password123\",\n  \"name\": \"Customer One\",\n  \"role\": \"customer\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register - Restaurant Owner",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner1@example.com\",\n  \"password\": \"password123\",\n  \"name\": \"Owner One\",\n  \"role\": \"restaurant_owner\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register - Restaurant Owner 2 (for ownership test)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner2@example.com\",\n  \"password\": \"password123\",\n  \"name\": \"Owner Two\",\n  \"role\": \"restaurant_owner\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register - Driver",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"driver1@example.com\",\n  \"password\": \"password123\",\n  \"name\": \"Driver One\",\n  \"role\": \"driver\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login - Owner (save token to owner_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.session && json.session.access_token) {",
+                  "  pm.collectionVariables.set('owner_token', json.session.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner1@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login - Owner 2 (save token to owner2_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.session && json.session.access_token) {",
+                  "  pm.collectionVariables.set('owner2_token', json.session.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner2@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login - Customer (save token to customer_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.session && json.session.access_token) {",
+                  "  pm.collectionVariables.set('customer_token', json.session.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login - Driver (save token to driver_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.session && json.session.access_token) {",
+                  "  pm.collectionVariables.set('driver_token', json.session.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"driver1@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Restaurants",
+      "item": [
+        {
+          "name": "GET all restaurants (public)",
+          "request": { "method": "GET", "url": "{{base_url}}/restaurants" }
+        },
+        {
+          "name": "GET one restaurant (public)",
+          "request": { "method": "GET", "url": "{{base_url}}/restaurants/{{restaurant_id}}" }
+        },
+        {
+          "name": "GET restaurant's menu items (public)",
+          "request": { "method": "GET", "url": "{{base_url}}/restaurants/{{restaurant_id}}/menu-items" }
+        },
+        {
+          "name": "POST create restaurant (owner) - saves restaurant_id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.id) { pm.collectionVariables.set('restaurant_id', json.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "url": "{{base_url}}/restaurants",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Pizza Place\",\n  \"address\": \"123 Main St\",\n  \"phone_number\": \"555-1234\",\n  \"email\": \"pizza@place.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH update restaurant (owner, should succeed)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "url": "{{base_url}}/restaurants/{{restaurant_id}}",
+            "body": { "mode": "raw", "raw": "{\n  \"phone_number\": \"555-9999\"\n}" }
+          }
+        },
+        {
+          "name": "PATCH update restaurant (owner2, should FAIL 403)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner2_token}}" }
+            ],
+            "url": "{{base_url}}/restaurants/{{restaurant_id}}",
+            "body": { "mode": "raw", "raw": "{\n  \"phone_number\": \"000-0000\"\n}" }
+          }
+        },
+        {
+          "name": "POST create restaurant (customer, should FAIL 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "url": "{{base_url}}/restaurants",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Should Fail\",\n  \"address\": \"n/a\"\n}" }
+          }
+        },
+        {
+          "name": "DELETE restaurant (owner)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{owner_token}}" }],
+            "url": "{{base_url}}/restaurants/{{restaurant_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Menu Items",
+      "item": [
+        {
+          "name": "POST create menu item (owner) - saves menu_item_id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.id) { pm.collectionVariables.set('menu_item_id', json.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "url": "{{base_url}}/restaurants/{{restaurant_id}}/menu-items",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Margherita Pizza\",\n  \"description\": \"Classic\",\n  \"price\": 12.99\n}"
+            }
+          }
+        },
+        {
+          "name": "GET one menu item (public)",
+          "request": { "method": "GET", "url": "{{base_url}}/menu-items/{{menu_item_id}}" }
+        },
+        {
+          "name": "PATCH menu item (owner, should succeed)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "url": "{{base_url}}/menu-items/{{menu_item_id}}",
+            "body": { "mode": "raw", "raw": "{\n  \"price\": 14.99\n}" }
+          }
+        },
+        {
+          "name": "PATCH menu item (owner2, should FAIL 403)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner2_token}}" }
+            ],
+            "url": "{{base_url}}/menu-items/{{menu_item_id}}",
+            "body": { "mode": "raw", "raw": "{\n  \"price\": 1.00\n}" }
+          }
+        },
+        {
+          "name": "DELETE menu item (owner)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{owner_token}}" }],
+            "url": "{{base_url}}/menu-items/{{menu_item_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "POST create order (customer) - saves order_id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.id) { pm.collectionVariables.set('order_id', json.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "url": "{{base_url}}/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": \"{{restaurant_id}}\",\n  \"items\": [\n    { \"menuItemId\": \"{{menu_item_id}}\", \"quantity\": 2 }\n  ],\n  \"deliveryAddress\": \"456 Oak St\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST create order (restaurant_owner, should FAIL 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "url": "{{base_url}}/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": \"{{restaurant_id}}\",\n  \"items\": [],\n  \"deliveryAddress\": \"n/a\"\n}"
+            }
+          }
+        },
+        {
+          "name": "GET my orders (customer)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": "{{base_url}}/orders"
+          }
+        },
+        {
+          "name": "GET my orders (owner - sees their restaurant's orders)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{owner_token}}" }],
+            "url": "{{base_url}}/orders"
+          }
+        },
+        {
+          "name": "GET one order (customer, owns it)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": "{{base_url}}/orders/{{order_id}}"
+          }
+        },
+        {
+          "name": "GET one order (owner2, should FAIL 403)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{owner2_token}}" }],
+            "url": "{{base_url}}/orders/{{order_id}}"
+          }
+        },
+        {
+          "name": "PATCH order status (owner, pending -> preparing)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "url": "{{base_url}}/orders/{{order_id}}",
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"preparing\"\n}" }
+          }
+        },
+        {
+          "name": "PATCH order status (customer, should FAIL 403)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "url": "{{base_url}}/orders/{{order_id}}",
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"delivered\"\n}" }
+          }
+        }
+      ]
+    }
+  ]
+}
