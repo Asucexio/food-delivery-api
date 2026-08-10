@@ -3,6 +3,9 @@ import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth';
 import restaurantRoutes from './routes/restaurants';
+import menuItemRoutes from './routes/menuItems';
+import orderRoutes from './routes/orders';
+ 
 
 dotenv.config();
 
@@ -17,6 +20,8 @@ app.get('/', (req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/restaurants', restaurantRoutes);
+app.use('/menu-items', menuItemRoutes);
+app.use('/orders', orderRoutes);
 
 
 
