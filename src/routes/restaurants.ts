@@ -28,6 +28,39 @@ router.get('/:id', async (req, res) => {
 });
 
 
+// POST /restaurants/:id/menu-items - restaurant_owner, must own THIS restaurant, nested create
+router.post('/:id/menu-items', authenticate, authorize('restaurant_owner'), async (req, res) => {
+    const { id } = req.params; // this is the restaurant's id
+    const { name, description, price } = req.body;
+ 
+    // ownership check: does the logged-in user own this restaurant?
+    const { data: restaurant, error: restaurantError } = await supabaseClient
+        .from('restaurants')
+        .select('owner_id')
+        .eq('id', id)
+        .single();
+ 
+    if (restaurantError || !restaurant) {
+        return res.status(404).json({ error: 'Restaurant not found' });
+    }
+ 
+    if (restaurant.owner_id !== req.user?.id) {
+        return res.status(403).json({ error: 'You do not own this restaurant' });
+    }
+ 
+    const { data, error } = await supabaseClient
+        .from('menu_items')
+        .insert({ restaurant_id: id, name, description, price })
+        .select()
+        .single();
+ 
+    if (error) {
+        return res.status(400).json({ error: error.message });
+    }
+ 
+    res.status(201).json(data);
+});
+
 // get the menu items for a specific restaurant by id
 router.get('/:id/menu-items', async (req, res) => {
     const { id } = req.params;
