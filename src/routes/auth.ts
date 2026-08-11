@@ -1,13 +1,12 @@
 import { Router } from 'express';
-import  supabaseClient  from '../config/supabase';
+import supabaseClient, { supabaseAdmin } from '../config/supabase';
 
 const router = Router();
 
- 
 router.post('/register', async (req, res) => {
   const { email, password, name, role } = req.body;
 
- 
+  // 1. Create user in Supabase Auth (uses anon key — this is fine)
   const { data, error } = await supabaseClient.auth.signUp({
     email,
     password,
@@ -17,8 +16,8 @@ router.post('/register', async (req, res) => {
     return res.status(400).json({ error: error?.message ?? 'Registration failed' });
   }
 
-  
-  const { error: insertError } = await supabaseClient
+  // 2. Insert into custom users table (use admin client to bypass RLS)
+  const { error: insertError } = await supabaseAdmin
     .from('users')
     .insert({
       id: data.user.id,
@@ -37,7 +36,6 @@ router.post('/register', async (req, res) => {
   });
 });
 
- 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
