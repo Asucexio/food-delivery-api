@@ -1,7 +1,13 @@
 import { Router } from 'express';
 import supabaseClient, { supabaseAdmin } from '../config/supabase';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
+
+router.get('/me', authenticate, async (req, res) => {
+  res.json(req.user);
+});
+
 
 router.post('/register', async (req, res) => {
   const { email, password, name, role } = req.body;
